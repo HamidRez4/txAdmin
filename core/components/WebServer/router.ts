@@ -30,7 +30,7 @@ export default (config: WebServerConfigType) => {
     const chartDataLimiter = KoaRateLimit({
         driver: 'memory',
         db: new Map(),
-        max: 10,
+        max: 15,
         duration: 30 * 1000,
         errorMessage: JSON.stringify({ failReason: 'rate_limiter' }),
         disableHeader: true,

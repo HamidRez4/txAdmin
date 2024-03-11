@@ -117,6 +117,7 @@ export default class FXRunner {
             '+set', 'txAdmin-luaComToken', globals.webServer.luaComToken,
             '+set', 'txAdminServerMode', 'true', //Can't change this one due to fxserver code compatibility
             '+exec', this.config.cfgPath,
+            '+set', 'sv_TEMP_HBB', '[0.001, 0.002, 0.004, 0.006, 0.008, 0.010, 0.015, 0.020, 0.030, 0.050, 0.070, 0.100, 0.150, 0.250]',
         ].flat(2);
 
         // Configure spawn parameters according to the environment

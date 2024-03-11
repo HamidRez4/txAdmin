@@ -21,7 +21,7 @@ export default class PerformanceCollector {
     constructor() {
         // this.playersTimeSeries = new TimeSeries(`${globals.info.serverProfilePath}/data/players.json`, 10, 60*60*24);
         this.hardConfigs = {
-            heatmapDataFile: `${globals.info.serverProfilePath}/data/stats_heatmapData_v1.json`,
+            heatmapDataFile: `${globals.info.serverProfilePath}/data/stats_heatmapData_v2_test.json`,
             playerCountFile: `${globals.info.serverProfilePath}/data/stats_playerCount_v1.json`,
             performance: {
                 resolution: 5,

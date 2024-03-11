@@ -7,7 +7,28 @@ const clientsToMargin = (maxClients) => {
     return 12 + (maxClients.toString().length * 5);
 };
 
-const yLabels = ['5 ms', '10 ms', '25 ms', '50 ms', '75 ms', '100 ms', '250 ms', '500 ms', '750 ms', '1.0 s', '2.5 s', '5.0 s', '7.5 s', '10 s', '+Inf'];
+// const yLabels = ['5 ms', '10 ms', '25 ms', '50 ms', '75 ms', '100 ms', '250 ms', '500 ms', '750 ms', '1.0 s', '2.5 s', '5.0 s', '7.5 s', '10 s', '+Inf'];
+const yLabels = ['1 ms', '2 ms', '4 ms', '6 ms', '8 ms', '10 ms', '15 ms', '20 ms', '30 ms', '50 ms', '70 ms', '100 ms', '150 ms', '250 ms', '+Inf'];
+
+//Calculate the reference weights - so we can calculate how much they likely impacted the overall time.
+//NOTE: This roughly follows the Prometheus histogram_quantile function, and asumes a linear distribution
+const refBuckets = [0.001, 0.002, 0.004, 0.006, 0.008, 0.010, 0.015, 0.020, 0.030, 0.050, 0.070, 0.100, 0.150, 0.250, '+Inf'];
+const refWeights = [];
+for (let i = 0; i < refBuckets.length; i++) {
+    const prev = refBuckets[i - 1] ?? 0;
+    if (typeof prev !== 'number') throw new Error(`Invalid prev value: ${prev}`);
+
+    //If last, add a 25% margin as we don't know the actual value
+    if (i === refBuckets.length - 1) {
+        refWeights.push(prev * 1.25);
+        break;
+    }
+
+    //Otherwise, calculate the median value between the current and the previous
+    const curr = refBuckets[i];
+    if (typeof curr !== 'number') throw new Error(`Invalid current value: ${curr}`);
+    refWeights.push((prev + curr) / 2);
+}
 
 
 export const drawHeatmap = (d3Container, perfData, options = {}) => {
@@ -50,12 +71,19 @@ export const drawHeatmap = (d3Container, perfData, options = {}) => {
         }
 
         //Process buckets
+        let totalEstimatedTime = 0;
+        for (let bucketIndex = 0; bucketIndex < 15; bucketIndex++) {
+            const freq = (typeof snap.buckets[bucketIndex] == 'number') ? snap.buckets[bucketIndex] : 0;
+            totalEstimatedTime += freq * refWeights[bucketIndex];
+        }
+
         for (let bucketIndex = 0; bucketIndex < 15; bucketIndex++) {
             const freq = (typeof snap.buckets[bucketIndex] == 'number') ? snap.buckets[bucketIndex] : 0;
             snapBuckets.push({
                 x: snapIndex,
                 y: bucketIndex,
-                freq: freq
+                freq: freq,
+                weight: freq * refWeights[bucketIndex] / totalEstimatedTime,
             });
         }
     }
@@ -69,6 +97,7 @@ export const drawHeatmap = (d3Container, perfData, options = {}) => {
         bottom: options.margin.bottom || 20,
         left: options.margin.left || clientsToMargin(maxClients)
     };
+    const chartType = options.type || 'weight';
     const height = options.height || 500;
     const colorScheme = options.colorScheme || d3.interpolateViridis;
 
@@ -121,19 +150,20 @@ export const drawHeatmap = (d3Container, perfData, options = {}) => {
 
 
     // Drawing the Heatmap
+    const getTypeValue = (d) => (chartType == 'weight') ? d.weight : d.freq;
     const heatmap = svg.append("g")
         .attr("id", "heatmap")
         .selectAll('rect')
         .data(snapBuckets)
         .enter()
         .append('rect')
-        .filter(d => (typeof d.freq == 'number' && d.freq > 0))
+        .filter(d => (typeof getTypeValue(d) == 'number' && getTypeValue(d) > 0))
         .attr('x', (d, i) => timeScale(d.x))
         .attr('y', (d, i) => tickBucketsScale(d.y))
         .attr('width', timeScale.bandwidth())
         .attr('height', tickBucketsScale.bandwidth())
-        .attr('fill', d => color(d.freq))
-        .attr('stroke', d => color(d.freq));
+        .attr('fill', d => color(getTypeValue(d)))
+        .attr('stroke', d => color(getTypeValue(d)));
 
 
     // Y2 Axis - Player count

@@ -79,7 +79,7 @@
         margin-left: 0.2rem;
         margin-right: 1.2rem;
     }
-    #chartThreadSelectBtn{
+    #chart-dropdowns{
         padding: .1rem .4rem;
         font-size: .7rem;
     }
@@ -144,13 +144,23 @@
                         <span class="labelText">Tick Time (at bottom is better)</span>
                     </div>
 
-                    <div class="btn-group ml-auto">
-                        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" 
+                    <div class="ml-auto">
+                        <div class="btn-group mr-1">
+                            <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" 
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" id="chartThreadSelectBtn">svMain</button>
-                        <div class="dropdown-menu threadSelectDropdown bg-secondary" data-popper-placement="bottom-start">
-                            <button class="dropdown-item bg-secondary text-dark" id="chartThreadSelectBtn-svMain">svMain</button>
-                            <button class="dropdown-item bg-secondary text-dark" id="chartThreadSelectBtn-svSync">svSync</button>
-                            <button class="dropdown-item bg-secondary text-dark" id="chartThreadSelectBtn-svNetwork">svNetwork</button>
+                            <div class="dropdown-menu threadSelectDropdown bg-secondary" data-popper-placement="bottom-start">
+                                <button class="dropdown-item bg-secondary text-dark" id="chartThreadSelectBtn-svMain">svMain</button>
+                                <button class="dropdown-item bg-secondary text-dark" id="chartThreadSelectBtn-svSync">svSync</button>
+                                <button class="dropdown-item bg-secondary text-dark" id="chartThreadSelectBtn-svNetwork">svNetwork</button>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-secondary btn-sm dropdown-toggle chart-dropdowns" type="button" 
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" id="chartTypeBtn">Tick Weight</button>
+                            <div class="dropdown-menu threadSelectDropdown bg-secondary" data-popper-placement="bottom-start">
+                                <button class="dropdown-item bg-secondary text-dark" id="chartTypeBtn-weight">Tick Weight</button>
+                                <button class="dropdown-item bg-secondary text-dark" id="chartTypeBtn-count">Tick Count</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -169,7 +179,7 @@
     <div class="col-md-6 text-center">
         <div id="tsMessage" class="d-none">
             🏆 With <span id="tsMedianPlayerCount">?</span> median players, your server may be in the worldwide Top 1000 servers. <br>
-            Join <strong><a href="https://discord.gg/qmMq79D59T" target="_blank">discord.gg/txAdmin</a></strong> and use the <code>/server</code> command to check the rank see if you are eligible for the <i>TOP SERVER</i> role (Top 500 only).
+            Join <strong><a href="https://discord.gg/qmMq79D59T" target="_blank">discord.gg/txAdmin</a></strong> and use the <code>/server</code> command to check the rank and see if you are eligible for the <i>TOP SERVER</i> role (Top 500 only).
         </div>
         <% if (txAdminVersion.includes('-')) { %>
             <span class="text-danger font-weight-bold">
@@ -190,6 +200,7 @@
     //Elements & vars
     let perfData;
     const chartThreadSelectBtn = document.getElementById('chartThreadSelectBtn');
+    const chartTypeBtn = document.getElementById('chartTypeBtn');
     const d3Container = document.getElementById('d3-container');
     const chartOptions = {
         // colorScheme: d3[`<%= uiTheme ? 'interpolateViridis' : 'interpolateTurbo' %>`],
@@ -197,12 +208,17 @@
         // colorScheme: d3.interpolateTurbo,
         colorScheme: d3.interpolateViridis,
     }
+    let selectedThread = 'svMain';
+    let selectedChartType = 'weight';
 
     //Draws the chart or sets the message
     const draw = (data) => {
         if(Array.isArray(data)){
             const tsStart = Date.now();
-            const rects = drawHeatmap(d3Container, perfData, chartOptions);
+            const rects = drawHeatmap(d3Container, perfData, {
+                ...chartOptions,
+                type: selectedChartType
+            });
             const duration = Date.now() - tsStart;
         }else if(typeof data == 'string'){
             d3Container.innerHTML = `<div class="text-center text-muted p-4" id="d3-container-message">${data}</div>`;
@@ -213,11 +229,12 @@
     }
 
     //Sets the chart data
-    const setChartThread = async (thread) => {
-        chartThreadSelectBtn.textContent = thread;
+    const refreshChart = async () => {
+        chartThreadSelectBtn.textContent = selectedThread;
+        chartTypeBtn.textContent = selectedChartType == 'weight' ? 'Tick Weight' : 'Tick Count';
         perfData = false;
         try {
-            const rawPerfData = await fetch(TX_BASE_PATH + `chartData/${thread}`);
+            const rawPerfData = await fetch(TX_BASE_PATH + `chartData/${selectedThread}`);
             const parsedPerfData = JSON.parse(await rawPerfData.text());
             if(Array.isArray(parsedPerfData)){
                 perfData = parsedPerfData;
@@ -245,20 +262,33 @@
             console.log(error);
         }
     }
-    setChartThread('svMain');
+    
+    refreshChart();
     document.getElementById('chartThreadSelectBtn-svMain').addEventListener('click', () => {
-        setChartThread('svMain');
+        selectedThread = 'svMain';
+        refreshChart();
     }, false);
     document.getElementById('chartThreadSelectBtn-svSync').addEventListener('click', () => {
-        setChartThread('svSync')
+        selectedThread = 'svSync';
+        refreshChart();
     }, false);
     document.getElementById('chartThreadSelectBtn-svNetwork').addEventListener('click', () => {
-        setChartThread('svNetwork')
+        selectedThread = 'svNetwork';
+        refreshChart();
+    }, false);
+
+    document.getElementById('chartTypeBtn-weight').addEventListener('click', () => {
+        selectedChartType = 'weight';
+        refreshChart();
+    }, false);
+    document.getElementById('chartTypeBtn-count').addEventListener('click', () => {
+        selectedChartType = 'count';
+        refreshChart();
     }, false);
 
     //Every 2.5 minutes
     setInterval(() => {
-        setChartThread(chartThreadSelectBtn.textContent);
+        refreshChart();
     }, 2.5*60*1000);
 
     //Renders it again when resized
