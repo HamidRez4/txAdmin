@@ -91,7 +91,7 @@ const infoCommand: ApplicationCommandDataResolvable = {
                 {
                     type: ApplicationCommandOptionType.String,
                     name: 'id',
-                    description: 'The ID to search for (eg fivem:271816).',
+                    description: 'The ID to search for (eg vmp:271816).',
                     required: true,
                     minLength: 5,
                 },

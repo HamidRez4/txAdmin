@@ -109,7 +109,7 @@ export default async function HistorySearch(ctx: AuthedCtx) {
             //Searching by target identifiers
             const { validIds, validHwids, invalids } = parseLaxIdsArrayInput(searchValue);
             if (invalids.length) {
-                return sendTypedResp({ error: `Invalid identifiers (${invalids.join(',')}). Prefix any identifier with their type, like 'fivem:123456' instead of just '123456'.` });
+                return sendTypedResp({ error: `Invalid identifiers (${invalids.join(',')}). Prefix any identifier with their type, like 'vmp:123456' instead of just '123456'.` });
             }
             if (!validIds.length && !validHwids.length) {
                 return sendTypedResp({ error: `No valid identifiers found.` });

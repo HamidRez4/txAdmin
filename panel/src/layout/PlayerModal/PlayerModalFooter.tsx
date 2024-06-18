@@ -54,7 +54,7 @@ export default function PlayerModalFooter({ playerRef, player }: PlayerModalFoot
         for (const id of player.ids) {
             if (id.startsWith("discord:")) {
                 params.set("discord", id);
-            } else if (id.startsWith("fivem:")) {
+            } else if (id.startsWith("vmp:")) {
                 params.set("citizenfx", id);
             }
         }

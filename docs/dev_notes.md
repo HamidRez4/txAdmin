@@ -703,7 +703,7 @@ Ideas:
 - Maybe we could go full `mongod.exe`
     - very mature, great docs
     - 45mb file, 120mb process
-    - to search for ids we can do `{identifiers: {$in: ['discord:xxxxx', 'fivem:yyyyy']}}`
+    - to search for ids we can do `{identifiers: {$in: ['discord:xxxxx', 'vmp:yyyyy']}}`
 
 Databases that i didn't check yet:
 https://github.com/indradb/indradb

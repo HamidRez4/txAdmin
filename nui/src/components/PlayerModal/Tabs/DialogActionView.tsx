@@ -191,7 +191,7 @@ const DialogActionView: React.FC = () => {
       for (const id of playerDetails.player.ids) {
         if (id.startsWith("discord:")) {
           params.set("discord", id);
-        } else if (id.startsWith("fivem:")) {
+        } else if (id.startsWith("vmp:")) {
           params.set("citizenfx", id);
         }
       }

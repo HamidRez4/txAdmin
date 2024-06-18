@@ -6,7 +6,7 @@ export default {
         // https://github.com/discordjs/discord.js/pull/9144
         // validated in txtracker dataset
         discord: /^discord:\d{17,20}$/,
-        fivem: /^fivem:\d{1,8}$/,
+        vmp: /^vmp:\d{1,8}$/,
         license: /^license:[0-9A-Fa-f]{18}$/,
         license2: /^license2:[0-9A-Fa-f]{18}$/,
         live: /^live:\d{14,20}$/,
@@ -15,7 +15,7 @@ export default {
     },
     validIdentifierParts: {
         discord: /^\d{17,20}$/,
-        fivem: /^\d{1,8}$/,
+        vmp: /^\d{1,8}$/,
         license: /^[0-9A-Fa-f]{18}$/,
         license2: /^[0-9A-Fa-f]{18}$/,
         live: /^\d{14,20}$/,

@@ -18,9 +18,9 @@ const migrateProviderIdentifiers = (providerName, providerData) => {
         // data may be empty, or nameid may be invalid
         try {
             const res = /\/user\/(\d{1,8})/.exec(providerData.data.nameid);
-            providerData.identifier = `fivem:${res[1]}`;
+            providerData.identifier = `vmp:${res[1]}`;
         } catch (error) {
-            providerData.identifier = 'fivem:00000000';
+            providerData.identifier = 'vmp:00000000';
         }
     } else if (providerName === 'discord') {
         providerData.identifier = `discord:${providerData.id}`;

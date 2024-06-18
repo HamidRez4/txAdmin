@@ -289,7 +289,7 @@ export const MockedPlayerDetails: PlayerModalSuccess = {
         "tsWhitelisted": 1667314521,
         "oldIds": [
             "license:9b9fc300cc65d22ad3b536175a4d15c0e4933753",
-            "fivem:271816",
+            "vmp:271816",
             "discord:272800190639898628"
         ],
         "oldHwids": [

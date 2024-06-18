@@ -135,7 +135,7 @@ export const parsePlayerIds = (ids: string[]) => {
     let validIdsArray: string[] = [];
     const validIdsObject: PlayerIdsObjectType = {
         discord: null,
-        fivem: null,
+        vmp: null,
         license: null,
         license2: null,
         live: null,
@@ -213,7 +213,7 @@ export const parseLaxIdsArrayInput = (fullInput: string) => {
         } else if (consts.validIdentifierParts.discord.test(input)) {
             validIds.push(`discord:${input}`);
         } else if (consts.validIdentifierParts.fivem.test(input)) {
-            validIds.push(`fivem:${input}`);
+            validIds.push(`vmp:${input}`);
         } else if (consts.validIdentifierParts.license.test(input)) {
             validIds.push(`license:${input}`);
         } else if (consts.validIdentifierParts.steam.test(input)) {

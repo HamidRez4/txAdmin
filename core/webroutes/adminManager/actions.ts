@@ -86,7 +86,7 @@ async function handleAdd(ctx: AuthedCtx) {
         try {
             if (consts.validIdentifiers.fivem.test(citizenfxID)) {
                 const id = citizenfxID.split(':')[1];
-                const res = await got(`https://policy-live.fivem.net/api/getUserInfo/${id}`, cfxHttpReqOptions).json();
+                const res = await got(`https://api.vmp.ir/other/forum.php?work=getUser&id=${id}`, cfxHttpReqOptions).json();
                 if (!res.username || !res.username.length) {
                     return ctx.send({type: 'danger', message: 'Invalid CitizenFX ID1'});
                 }
@@ -101,7 +101,7 @@ async function handleAdd(ctx: AuthedCtx) {
                 }
                 citizenfxData = {
                     id: citizenfxID,
-                    identifier: `fivem:${res.user.id}`,
+                    identifier: `vmp:${res.user.id}`,
                 };
             } else {
                 return ctx.send({type: 'danger', message: 'Invalid CitizenFX ID3'});
@@ -184,7 +184,7 @@ async function handleEdit(ctx: AuthedCtx) {
         try {
             if (consts.validIdentifiers.fivem.test(citizenfxID)) {
                 const id = citizenfxID.split(':')[1];
-                const res = await got(`https://policy-live.fivem.net/api/getUserInfo/${id}`, cfxHttpReqOptions).json();
+                const res = await got(`https://api.vmp.ir/other/forum.php?work=getUser&id=${id}`, cfxHttpReqOptions).json();
                 if (!res.username || !res.username.length) {
                     return ctx.send({type: 'danger', message: '(ERR1) Invalid CitizenFX ID'});
                 }
@@ -193,13 +193,13 @@ async function handleEdit(ctx: AuthedCtx) {
                     identifier: citizenfxID,
                 };
             } else if (citizenfxIDRegex.test(citizenfxID)) {
-                const res = await got(`https://forum.cfx.re/u/${citizenfxID}.json`, cfxHttpReqOptions).json();
+                const res = await got(`https://forum.vmp.ir/u/${citizenfxID}.json`, cfxHttpReqOptions).json();
                 if (!res.user || typeof res.user.id !== 'number') {
                     return ctx.send({type: 'danger', message: '(ERR2) Invalid CitizenFX ID'});
                 }
                 citizenfxData = {
                     id: citizenfxID,
-                    identifier: `fivem:${res.user.id}`,
+                    identifier: `vmp:${res.user.id}`,
                 };
             } else {
                 return ctx.send({type: 'danger', message: '(ERR3) Invalid CitizenFX ID'});
